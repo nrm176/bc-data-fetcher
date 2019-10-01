@@ -7,6 +7,8 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 from lib.logtaker import logger
+import random
+import time
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -83,6 +85,7 @@ class DownloadHanlder(object):
             logger.info('sending a request')
             d = cls.send_request(request['tickers'], request['_from'], request['_to'])
             cls.save_json(d, request['tickers'], request['_from'], request['_to'])
+            time.sleep(random.uniform(0, 1) * 5.0)
 
 
 
