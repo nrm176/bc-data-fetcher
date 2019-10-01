@@ -10,6 +10,7 @@ from lib.logtaker import logger
 import random
 import time
 import argparse
+import sys
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -92,6 +93,10 @@ class DownloadHanlder(object):
         for request in request_lists[start:start+int(num_of_requests)]:
             logger.info('sending a request for {} from {} to {}'.format(request['tickers'], request['_from'], request['_to']))
             d = cls.send_request(request['tickers'], request['_from'], request['_to'])
+
+            if d["message"] == "Limit Exceeded":
+                logger.error('request limit exceeded')
+                sys.exit()
             cls.save_json(d, request['tickers'], request['_from'], request['_to'])
             time.sleep(random.uniform(0, 1) * 5.0)
 
