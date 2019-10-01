@@ -87,10 +87,10 @@ class DownloadHanlder(object):
                 logger.info('requesting {0} for {1}-{2}'.format(ticker, value[0], value[1]))
                 request_lists.append({'tickers': ticker, '_from': value[0], '_to': value[1]})
         start = cls.count_existing_json_file()
-        logger.info('start {}th element'.format(start))
+        logger.info('start from {}th element'.format(start))
 
         for request in request_lists[start:start+int(num_of_requests)]:
-            logger.info('sending a request')
+            logger.info('sending a request for {} from {} to {}'.format(request['tickers'], request['_from'], request['_to']))
             d = cls.send_request(request['tickers'], request['_from'], request['_to'])
             cls.save_json(d, request['tickers'], request['_from'], request['_to'])
             time.sleep(random.uniform(0, 1) * 5.0)
@@ -98,7 +98,7 @@ class DownloadHanlder(object):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Arguments of bc-data-fetcher')
-    parser.add_argument('--num_of_requests', help='how many requests to create')
+    parser.add_argument('--num_of_requests', help='how many requests to create', default='1')
     args = parser.parse_args()
     d = DownloadHanlder()
     d.run(args.num_of_requests)
