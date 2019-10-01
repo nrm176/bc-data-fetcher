@@ -9,9 +9,11 @@ from dotenv import load_dotenv
 from lib.logtaker import logger
 import random
 import time
+import argparse
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
+
 
 class DownloadHanlder(object):
 
@@ -44,7 +46,6 @@ class DownloadHanlder(object):
         yqs = cls.split_list(yqs, 12)
         return [(yq[0], yq[-1:][0]) for yq in yqs]
 
-
     @classmethod
     def send_request(cls, tickers, _from, _to):
         try:
@@ -70,7 +71,11 @@ class DownloadHanlder(object):
         logger.info('saved')
 
     @classmethod
-    def run(cls):
+    def count_existing_json_file(cls):
+        return len(list(pathlib.Path('./json').glob('*')))
+
+    @classmethod
+    def run(cls, num_of_requests):
         codes = cls.load_company_codes()
         codes = cls.split_list(codes, 3)
         tickers = [','.join(code) for code in codes]
@@ -81,14 +86,19 @@ class DownloadHanlder(object):
             for value in values:
                 logger.info('requesting {0} for {1}-{2}'.format(ticker, value[0], value[1]))
                 request_lists.append({'tickers': ticker, '_from': value[0], '_to': value[1]})
-        for request in request_lists[3:4]:
+        start = cls.count_existing_json_file()
+        logger.info('start {}th element'.format(start))
+
+        for request in request_lists[start:start+int(num_of_requests)]:
             logger.info('sending a request')
             d = cls.send_request(request['tickers'], request['_from'], request['_to'])
             cls.save_json(d, request['tickers'], request['_from'], request['_to'])
             time.sleep(random.uniform(0, 1) * 5.0)
 
 
-
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Arguments of bc-data-fetcher')
+    parser.add_argument('--num_of_requests', help='how many requests to create')
+    args = parser.parse_args()
     d = DownloadHanlder()
-    d.run()
+    d.run(args.num_of_requests)
