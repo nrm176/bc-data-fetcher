@@ -94,7 +94,7 @@ class DownloadHanlder(object):
             logger.info('sending a request for {} from {} to {}'.format(request['tickers'], request['_from'], request['_to']))
             d = cls.send_request(request['tickers'], request['_from'], request['_to'])
 
-            if d["message"] == "Limit Exceeded":
+            if d.get("message") == "Limit Exceeded":
                 logger.error('request limit exceeded')
                 sys.exit()
             cls.save_json(d, request['tickers'], request['_from'], request['_to'])
