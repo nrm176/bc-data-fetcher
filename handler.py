@@ -9,7 +9,6 @@ from dotenv import load_dotenv
 from lib.logtaker import logger
 import random
 import time
-import argparse
 import sys
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -63,7 +62,7 @@ class DownloadHanlder(object):
             )
             return response.json()
         except requests.exceptions.RequestException:
-            print('HTTP Request failed')
+            logger.error('HTTP Request failed')
 
     @classmethod
     def save_json(cls, data, tickers, _from, _to):
@@ -99,11 +98,3 @@ class DownloadHanlder(object):
                 sys.exit()
             cls.save_json(d, request['tickers'], request['_from'], request['_to'])
             time.sleep(random.uniform(0, 1) * 5.0)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Arguments of bc-data-fetcher')
-    parser.add_argument('--num_of_requests', help='how many requests to create', default='1')
-    args = parser.parse_args()
-    d = DownloadHanlder()
-    d.run(args.num_of_requests)
