@@ -1,4 +1,3 @@
-import sqlite3
 import pathlib
 import csv
 import requests
@@ -34,11 +33,11 @@ class DownloadHanlder(object):
     @classmethod
     def build_year_and_quarter(cls, start_year):
         end_year = start_year - 8
-        quaters = ['Q1', 'Q2', 'Q3', 'Q4']
+        quarters = ['Q1', 'Q2', 'Q3', 'Q4']
         yqs = []
         while True:
-            for quater in quaters:
-                yqs.append('{}{}'.format(end_year, quater))
+            for quarter in quarters:
+                yqs.append('{}{}'.format(end_year, quarter))
             end_year += 1
             if end_year > start_year:
                 break
@@ -68,7 +67,7 @@ class DownloadHanlder(object):
     def save_json(cls, data, tickers, _from, _to):
         with open('./json/{}-{}-{}.json'.format(tickers.replace(',', '_'), _from, _to), 'w') as outfile:
             json.dump(data, outfile)
-        logger.info('saved')
+        logger.info('{}-{}-{} - saved'.format(tickers.replace(',', '_'), _from, _to))
 
     @classmethod
     def count_existing_json_file(cls):
