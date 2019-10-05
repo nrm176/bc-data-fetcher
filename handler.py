@@ -15,6 +15,16 @@ load_dotenv(dotenv_path)
 
 
 class DownloadHanlder(object):
+    codes = None
+    tickers = None
+    values = None
+
+    def __init__(self):
+        codes = self.load_company_codes()
+        codes = self.split_list(codes, 3)
+        self.tickers = [','.join(code) for code in codes]
+        self.values = self.build_year_and_quarter(2019)
+
 
     @classmethod
     def split_list(cls, _list, x):
@@ -73,27 +83,21 @@ class DownloadHanlder(object):
     def count_existing_json_file(cls):
         return len(list(pathlib.Path('./json').glob('*')))
 
-    @classmethod
-    def run(cls, num_of_requests):
-        codes = cls.load_company_codes()
-        codes = cls.split_list(codes, 3)
-        tickers = [','.join(code) for code in codes]
-        values = cls.build_year_and_quarter(2019)
-
+    def run(self, num_of_requests):
         request_lists = []
-        for ticker in tickers:
-            for value in values:
+        for ticker in self.tickers:
+            for value in self.values:
                 logger.info('requesting {0} for {1}-{2}'.format(ticker, value[0], value[1]))
                 request_lists.append({'tickers': ticker, '_from': value[0], '_to': value[1]})
-        start = cls.count_existing_json_file()
+        start = self.count_existing_json_file()
         logger.info('start from {}th element'.format(start))
 
         for request in request_lists[start:start+int(num_of_requests)]:
             logger.info('sending a request for {} from {} to {}'.format(request['tickers'], request['_from'], request['_to']))
-            d = cls.send_request(request['tickers'], request['_from'], request['_to'])
+            d = self.send_request(request['tickers'], request['_from'], request['_to'])
 
             if d.get("message") == "Limit Exceeded":
                 logger.error('request limit exceeded')
                 sys.exit()
-            cls.save_json(d, request['tickers'], request['_from'], request['_to'])
-            time.sleep(random.uniform(0, 1) * 5.0)
+            self.save_json(d, request['tickers'], request['_from'], request['_to'])
+            time.sleep(5.1)
