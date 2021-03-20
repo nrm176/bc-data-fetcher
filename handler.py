@@ -100,4 +100,4 @@ class DownloadHandler(object):
                 logger.error('request limit exceeded')
                 sys.exit()
             self.save_json(d, request['tickers'], request['_from'], request['_to'])
-            time.sleep(5.0)
+            time.sleep(0.5)
