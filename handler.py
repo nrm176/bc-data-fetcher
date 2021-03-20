@@ -14,16 +14,16 @@ dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
 
 
-class DownloadHanlder(object):
+class DownloadHandler(object):
     codes = None
     tickers = None
     values = None
 
-    def __init__(self):
+    def __init__(self, start_year):
         codes = self.load_company_codes()
         codes = self.split_list(codes, 3)
         self.tickers = [','.join(code) for code in codes]
-        self.values = self.build_year_and_quarter(2019)
+        self.values = self.build_year_and_quarter(start_year)
 
 
     @classmethod
@@ -100,4 +100,4 @@ class DownloadHanlder(object):
                 logger.error('request limit exceeded')
                 sys.exit()
             self.save_json(d, request['tickers'], request['_from'], request['_to'])
-            time.sleep(5.1)
+            time.sleep(5.0)
